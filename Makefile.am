@@ -7,4 +7,10 @@ EXTRA_DIST = readme.md license
 
 jnfo_SOURCES = \
     src/main.cpp \
-    include/utils.h
+    include/defines.h \
+    include/utils.h \
+    include/cpu.h \
+    include/gpu.h \
+    include/mem.h \
+    include/thermal.h \
+    includ/parse_size.h
