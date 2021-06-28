@@ -1,0 +1,60 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create Release
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: build aarch64
+        id: runcmd
+        with:
+          arch: aarch64
+          distro: ubuntu18.04
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+          shell: /bin/bash
+          install: |
+            apt-get update -y
+            apt-get install -y build-essential autoconf-archive dh-make debhelper devscripts fakeroot lintian pbuilder
+          run: |
+            ./autogen.sh
+            ./configure
+            make deb
+            cp jnfo_*.deb /artifacts
+      - name: deb file path
+        run: echo "::set-output name=file_path::$(readlink -f ${PWD}/artifacts/jnfo_*.deb)"
+        shell: bash
+        id: deb_file_path
+      - name: deb file name
+        run: echo "::set-output name=file_name::$(basename ${PWD}/artifacts/jnfo_*.deb)"
+        shell: bash
+        id: deb_file_name
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above
+          asset_path: ${{ steps.deb_file_path.outputs.file_path }}
+          asset_name: ${{ steps.deb_file_name.outputs.file_name }}
+          asset_content_type: application/vnd.debian.binary-package

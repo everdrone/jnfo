@@ -38,47 +38,47 @@ jnfo [options]
 ```yml
 # sudo jnfo -s
 Thermal:
-  Average: 31.9 C
-  Max: 36.0 C
+  Average: 31.7 C
+  Max:     36.0 C
 CPU:
-  Avg Freq: 1.479 GHz
+  Avg Freq:  1.479 GHz
   Avg Speed: 100%
 GPU:
-  Freq: 921.600 MHz
-  Speed: 100%
+  Freq:  76.800 MHz
+  Speed: 8%
 Memory:
-  RAM: 33%
-  Swap: 0%
+  RAM:   33%
+  Swap:  0%
   NVMap: 0%
 Power:
-  Total: 2938 mW
+  Total: 2078 mW
 ```
 
 ```yml
 # sudo jnfo
 Thermal:
-  Average: 33.4 C
-  Max: 38.0 C
+  Average: 31.6 C
+  Max:     36.0 C
   Sensors:
     - Name: AO
-      Temp: 38.0 C
+      Temp: 36.0 C
     - Name: CPU
-      Temp: 35.0 C
+      Temp: 32.5 C
     - Name: GPU
-      Temp: 31.5 C
+      Temp: 30.5 C
     - Name: PLL
-      Temp: 29.5 C
+      Temp: 27.5 C
     - Name: PMIC
       Temp: 100.0 C
     - Name: thermal
-      Temp: 32.8 C
+      Temp: 31.5 C
 CPU:
-  Avg Freq: 1.479 GHz
+  Avg Freq:  1.479 GHz
   Avg Speed: 100%
   Cores:
-    - Name: cpu0
+    - Name:   cpu0
       Online: true
-      Speed: 100%
+      Speed:  100%
       CPUInfo Freq:
         Min: 102.000 MHz
         Max: 1.479 GHz
@@ -88,13 +88,13 @@ CPU:
         Max: 1.479 GHz
         Cur: 1.479 GHz
       Idle State:
-        - Name: WFI
+        - Name:    WFI
           Disable: false
-        - Name: c7
+        - Name:    c7
           Disable: false
-    - Name: cpu1
+    - Name:   cpu1
       Online: true
-      Speed: 100%
+      Speed:  100%
       CPUInfo Freq:
         Min: 102.000 MHz
         Max: 1.479 GHz
@@ -104,13 +104,13 @@ CPU:
         Max: 1.479 GHz
         Cur: 1.479 GHz
       Idle State:
-        - Name: WFI
+        - Name:    WFI
           Disable: false
-        - Name: c7
+        - Name:    c7
           Disable: false
-    - Name: cpu2
+    - Name:   cpu2
       Online: true
-      Speed: 100%
+      Speed:  100%
       CPUInfo Freq:
         Min: 102.000 MHz
         Max: 1.479 GHz
@@ -120,13 +120,13 @@ CPU:
         Max: 1.479 GHz
         Cur: 1.479 GHz
       Idle State:
-        - Name: WFI
+        - Name:    WFI
           Disable: false
-        - Name: c7
+        - Name:    c7
           Disable: false
-    - Name: cpu3
+    - Name:   cpu3
       Online: true
-      Speed: 100%
+      Speed:  100%
       CPUInfo Freq:
         Min: 102.000 MHz
         Max: 1.479 GHz
@@ -136,14 +136,14 @@ CPU:
         Max: 1.479 GHz
         Cur: 1.479 GHz
       Idle State:
-        - Name: WFI
+        - Name:    WFI
           Disable: false
-        - Name: c7
+        - Name:    c7
           Disable: false
 GPU:
-  Load: 0
+  Load:     0
   Railgate: false
-  Speed: 8%
+  Speed:    8%
   Freq:
     Min: 76.800 MHz
     Max: 921.600 MHz
@@ -156,43 +156,43 @@ GPU:
   Clients Total: 0 B
 Memory:
   RAM:
-    Total: 4.06 GB
-    Free: 2.73 GB
-    Cached: 663.71 MB
-    Usage: 33%
+    Total:  4.06 GB
+    Free:   2.73 GB
+    Cached: 664.81 MB
+    Usage:  33%
   Swap:
-    Total: 2.03 GB
-    Free: 2.03 GB
+    Total:  2.03 GB
+    Free:   2.03 GB
     Cached: 0 B
-    Usage: 0%
+    Usage:  0%
   NVMap:
-    Total: 258.05 kB
-    Free: 258.05 kB
-    Used: 0 B
-    Usage: 0%
+    Total:  258.05 kB
+    Free:   258.05 kB
+    Used:   0 B
+    Usage:  0%
 Power:
-  - Name: POM_5V_IN
+  - Name:                   POM_5V_IN
     Critical Current Limit: 32760 mA
-    Critical Power Limit: 163013 mW
-    Current Input: 432 mA
-    Current Trigger Input: 432 mA
-    Power Input: 2146 mW
-    Power Trigger Input: 2146 mW
-    Voltage Input: 4968 mV
-  - Name: POM_5V_GPU
+    Critical Power Limit:   163800 mW
+    Current Input:          312 mA
+    Current Trigger Input:  320 mA
+    Power Input:            1600 mW
+    Power Trigger Input:    1600 mW
+    Voltage Input:          5000 mV
+  - Name:                   POM_5V_GPU
     Critical Current Limit: 32760 mA
-    Critical Power Limit: 162751 mW
-    Current Input: 0 mA
-    Current Trigger Input: 0 mA
-    Power Input: 0 mW
-    Power Trigger Input: 0 mW
-    Voltage Input: 4968 mV
-  - Name: POM_5V_CPU
+    Critical Power Limit:   163537 mW
+    Current Input:          0 mA
+    Current Trigger Input:  0 mA
+    Power Input:            0 mW
+    Power Trigger Input:    0 mW
+    Voltage Input:          4992 mV
+  - Name:                   POM_5V_CPU
     Critical Current Limit: 32760 mA
-    Critical Power Limit: 162751 mW
-    Current Input: 160 mA
-    Current Trigger Input: 160 mA
-    Power Input: 794 mW
-    Power Trigger Input: 755 mW
-    Voltage Input: 4968 mV
+    Critical Power Limit:   163537 mW
+    Current Input:          104 mA
+    Current Trigger Input:  112 mA
+    Power Input:            558 mW
+    Power Trigger Input:    558 mW
+    Voltage Input:          4984 mV
 ```
