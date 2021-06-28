@@ -1,0 +1,5 @@
+CLIENT                        PROCESS      PID        SIZE
+user                   nvargus-daemon    13173          2K
+user                      gnome-shell    13124          8K
+user                             Xorg    13094          0K
+total                                                  12K

@@ -1,0 +1,15 @@
+Source: jnfo
+Section: embedded
+Priority: optional
+Maintainer: Giorgio Tropiano <giorgiotropiano@gmail.com>
+Build-Depends: debhelper (>= 10), autotools-dev, autoconf-archive
+Standards-Version: 4.1.2
+Homepage: https://github.com/everdrone/jnfo
+
+Package: jnfo
+Architecture: arm64
+Depends: ${misc:Depends}
+Description: Jetson system information
+ Prints informations relative to the NVIDIA Jetson Nano
+ including thermal sensors, GPU and CPU frequencies,
+ memory, and power-related stats.

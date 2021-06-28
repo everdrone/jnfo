@@ -1,5 +1,6 @@
 #pragma once
 
+// #include <ncurses.h>
 #include <unistd.h>
 
 #include <fstream>
@@ -7,6 +8,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "defines.h"
 
 using std::string;
 using std::vector;
@@ -16,21 +19,48 @@ bool is_sudo_or_root() {
   return false;
 }
 
-void pretty(const char* key, const char* value = "", int level = 0, bool newline = true,
+enum pretty_type { NORMAL, NUMBER, BOOL, STRING, PERCENT };
+
+void pretty(const char* key, const char* value = "", short level = 0,
+            enum pretty_type type = NORMAL, short pad = 0, const char* unit = "",
             bool title = false) {
+  string fmt = value;
+  string title_mark = "-";
+  string unit_str = unit;
+
+  if (unit_str.size() > 0) {
+    unit_str = " " + unit_str;
+  }
+
+  if (enable_color) {
+    if (unit_str.size() > 0) {
+      unit_str = ANSI_COLOR_BRIGHT_BLACK + unit_str + ANSI_COLOR_RESET;
+    }
+    title_mark = ANSI_COLOR_YELLOW + title_mark + ANSI_COLOR_RESET;
+    switch (type) {
+      case NUMBER:
+        fmt = ANSI_COLOR_GREEN + fmt + ANSI_COLOR_RESET;
+        break;
+      case BOOL:
+        fmt = ANSI_COLOR_MAGENTA + fmt + ANSI_COLOR_RESET;
+        break;
+      case STRING:
+        fmt = ANSI_COLOR_CYAN + fmt + ANSI_COLOR_RESET;
+        break;
+      case PERCENT:
+        fmt = ANSI_COLOR_RED + fmt + ANSI_COLOR_RESET;
+        break;
+      default:
+        break;
+    }
+  }
+
   if (title) {
     level -= 1;
-    if (newline) {
-      printf("%*s- %s: %s\n", level * 2, "", key, value);
-    } else {
-      printf("%*s- %s: %s", level * 2, "", key, value);
-    }
+    printf("%*s%s %s:%*s%s%s\n", level * 2, "", title_mark.c_str(), key, pad + 1, "", fmt.c_str(),
+           unit_str.c_str());
   } else {
-    if (newline) {
-      printf("%*s%s: %s\n", level * 2, "", key, value);
-    } else {
-      printf("%*s%s: %s", level * 2, "", key, value);
-    }
+    printf("%*s%s:%*s%s%s\n", level * 2, "", key, pad + 1, "", fmt.c_str(), unit_str.c_str());
   }
 }
 

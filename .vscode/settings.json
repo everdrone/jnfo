@@ -1,5 +1,8 @@
 {
   "files.associations": {
+    "*.tmpl": "html",
+    "*.conf": "json",
+    ".env-cmdrc": "json",
     "__bit_reference": "cpp",
     "__config": "cpp",
     "__debug": "cpp",
@@ -78,6 +81,8 @@
     "*.tcc": "cpp",
     "memory_resource": "cpp",
     "stop_token": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "__memory": "cpp",
+    "filesystem": "cpp"
   }
 }

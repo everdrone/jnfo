@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "defines.h"
+#include "formatter.h"
 #include "utils.h"
 
 using std::string;
@@ -105,4 +106,62 @@ vector<cpu_t> get_cpus() {
   globfree(&glob_cpuidle_result);
   globfree(&glob_result);
   return result;
+}
+
+void pretty_print(vector<cpu_t> info, bool summary = false) {
+  fmt_measure_t fmt;
+  unsigned avg_cur_freq = 0;
+  unsigned avg_max_freq = 0;
+
+  pretty("CPU", "", 0);
+
+  for (const auto& cpu : info) {
+    avg_cur_freq += cpu.scaling.cur;
+    avg_max_freq += cpu.scaling.max;
+  }
+
+  avg_cur_freq /= info.size();
+  avg_max_freq /= info.size();
+
+  fmt = format_frequency(avg_cur_freq * 1e+3, 3);
+  pretty("Avg Freq", fmt.value.c_str(), 1, NUMBER, 1, fmt.unit.c_str());
+  pretty("Avg Speed", format_percent(avg_cur_freq, avg_max_freq, 0).c_str(), 1, PERCENT, 0);
+
+  if (!summary) {
+    pretty("Cores", "", 1);
+
+    for (const auto& cpu : info) {
+      // multiply hz by 1000
+      pretty("Name", cpu.name.c_str(), 3, STRING, 2, "", true);
+      pretty("Online", cpu.online ? "true" : "false", 3, BOOL);
+      pretty("Speed", format_percent(cpu.scaling.cur, cpu.scaling.max, 0).c_str(), 3, PERCENT, 1);
+      pretty("CPUInfo Freq", "", 3);
+
+      fmt = format_frequency(cpu.cpuinfo.min * 1e+3, 3);
+      pretty("Min", fmt.value.c_str(), 4, NUMBER, 0, fmt.unit.c_str());
+
+      fmt = format_frequency(cpu.cpuinfo.max * 1e+3, 3);
+      pretty("Max", fmt.value.c_str(), 4, NUMBER, 0, fmt.unit.c_str());
+
+      fmt = format_frequency(cpu.cpuinfo.cur * 1e+3, 3);
+      pretty("Cur", fmt.value.c_str(), 4, NUMBER, 0, fmt.unit.c_str());
+
+      pretty("Scaling Freq", "", 3);
+
+      fmt = format_frequency(cpu.scaling.min * 1e+3, 3);
+      pretty("Min", fmt.value.c_str(), 4, NUMBER, 0, fmt.unit.c_str());
+
+      fmt = format_frequency(cpu.scaling.max * 1e+3, 3);
+      pretty("Max", fmt.value.c_str(), 4, NUMBER, 0, fmt.unit.c_str());
+
+      fmt = format_frequency(cpu.scaling.cur * 1e+3, 3);
+      pretty("Cur", fmt.value.c_str(), 4, NUMBER, 0, fmt.unit.c_str());
+
+      pretty("Idle State", "", 3);
+      for (const auto& cpuidle : cpu.cpuidle) {
+        pretty("Name", cpuidle.name.c_str(), 5, STRING, 3, "", true);
+        pretty("Disable", cpuidle.disable ? "true" : "false", 5, BOOL);
+      }
+    }
+  }
 }

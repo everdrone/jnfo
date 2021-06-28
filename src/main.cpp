@@ -1,12 +1,16 @@
+#include <getopt.h>
 #include <glob.h>
 
 #include <iostream>
 
+#include "config.h"
 #include "cpu.h"
 #include "defines.h"
+#include "formatter.h"
 #include "gpu.h"
 #include "mem.h"
 #include "parse_size.h"
+#include "power.h"
 #include "thermal.h"
 #include "utils.h"
 
@@ -36,97 +40,164 @@ typedef struct {
   string model_name;
 
   thermal_t thermal;
+  power_t power;
 
   memory_t memory;
 
+  // TODO: ape_t ape
+  // TODO: vic_t vic
+  // TODO: emc_t emc
   vector<cpu_t> cpu;
   gpu_t gpu;
 } jetson_info_t;
 
-// TODO add option to display raw values
-char* millicelsius_to_celsius(unsigned millicelsius) {
-  float float_temp = float(millicelsius) / 1000;
-  char buffer[16];
-  sprintf(buffer, "%.2f C", float_temp);
+typedef struct options_struct {
+  bool help = false;
+  bool version = false;
+  bool summary = false;
+  bool all = false;
+  bool cpu = false;
+  bool gpu = false;
+  bool thermal = false;
+  bool memory = false;
+  bool power = false;
+} options_t;
 
-  return buffer;
+void print_version_exit() {
+  std::cout << PACKAGE_STRING << std::endl;
+  exit(EXIT_SUCCESS);
 }
 
-char* hertz_to_megahertz(unsigned hertz) {
-  float float_temp = float(hertz) / 1000000;
-  char buffer[16];
-  sprintf(buffer, "%.2f MHz", float_temp);
-
-  return buffer;
-}
-
-void pretty_print(jetson_info_t info) {
-  /* thernal */
-  pretty("Thermal", "", 0);
-  pretty("Average", std::to_string(info.thermal.average).c_str(), 1);
-  pretty("Max", std::to_string(info.thermal.max).c_str(), 1);
-
-  pretty("Sensors", "", 1);
-  for (const auto& sensor : info.thermal.sensors) {
-    pretty("Name", sensor.name.c_str(), 2, false, true);
-    pretty("Temp", std::to_string(sensor.temp).c_str(), 2);
-  }
-
-  /* cpu */
-  pretty("CPU", "", 0);
-  for (const auto& cpu : info.cpu) {
-    // multiply hz by 1000
-    pretty("Name", cpu.name.c_str(), 1, true, true);
-    pretty("Online", cpu.online ? "true" : "false", 2);
-    pretty("CPUInfo Freq", "", 2);
-    pretty("Min", std::to_string(cpu.cpuinfo.min).c_str(), 3);
-    pretty("Max", std::to_string(cpu.cpuinfo.max).c_str(), 3);
-    pretty("Cur", std::to_string(cpu.cpuinfo.cur).c_str(), 3);
-    pretty("Scaling Freq", "", 2);
-    pretty("Min", std::to_string(cpu.scaling.min).c_str(), 3);
-    pretty("Max", std::to_string(cpu.scaling.max).c_str(), 3);
-    pretty("Cur", std::to_string(cpu.scaling.cur).c_str(), 3);
-
-    pretty("Idle State", "", 2);
-    for (const auto& cpuidle : cpu.cpuidle) {
-      pretty("Name", cpuidle.name.c_str(), 3, true, true);
-      pretty("Disable", cpuidle.disable ? "true" : "false", 3);
-    }
-  }
-
-  /* gpu */
-  pretty("GPU", "", 0);
-  pretty("Load", info.gpu.load.c_str(), 1, false);
-  pretty("Freq", "", 1);
-  pretty("Min", std::to_string(info.gpu.min).c_str(), 2);
-  pretty("Max", std::to_string(info.gpu.max).c_str(), 2);
-  pretty("Cur", std::to_string(info.gpu.cur).c_str(), 2);
-  pretty("Railgate", info.gpu.railgate ? "enabled" : "disabled", 1);
-
-  /* memory */
-  pretty("Memory", "", 0);
-  pretty("RAM", "", 1);
-  pretty("Total", std::to_string(info.memory.ram.total).c_str(), 2);
-  pretty("Free", std::to_string(info.memory.ram.free).c_str(), 2);
-  pretty("Cached", std::to_string(info.memory.ram.cached).c_str(), 2);
-  pretty("Swap", "", 1);
-  pretty("Total", std::to_string(info.memory.swap.total).c_str(), 2);
-  pretty("Free", std::to_string(info.memory.swap.free).c_str(), 2);
-  pretty("Cached", std::to_string(info.memory.swap.cached).c_str(), 2);
-  pretty("NVMap", "", 1);
-  pretty("Total", std::to_string(info.memory.nvmap.total).c_str(), 2);
-  pretty("Free", std::to_string(info.memory.nvmap.free).c_str(), 2);
+void print_help_exit() {
+  // clang-format off
+  printf(
+    "%s [options]\n"
+    "    -h --help         Show this help\n"
+    "    -v --version      Show the program version\n"
+    "    -s --summary      Less verbose\n"
+    "    -c --cpu          Show CPU and cores information\n"
+    "    -g --gpu          Show GPU information and clients\n"
+    "    -t --thermal      Show thermal sensors\n"
+    "    -m --memory       Show RAM, swap and NVMap\n"
+    "    -p --power        Show power and current information\n"
+    "    -C --color        Enable colored output\n",
+    progname);
+  // clang-format on
+  exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char* argv[]) {
+  // set global program name
+  progname = argv[0];
+
+  /*
+   * Parse options
+   */
+  options_t oobj;
+
+  // clang-format off
+  static const struct option long_options[] = {
+    {"help",            no_argument,        NULL, 'h'},
+    {"version",         no_argument,        NULL, 'v'},
+    {"summary",         no_argument,        NULL, 's'},
+    {"cpu",             no_argument,        NULL, 'c'},
+    {"gpu",             no_argument,        NULL, 'g'},
+    {"thermal",         no_argument,        NULL, 't'},
+    {"memory",          no_argument,        NULL, 'm'},
+    {"power",           no_argument,        NULL, 'p'},
+    {"color",           no_argument,        NULL, 'C'},
+    {NULL,              0,                  NULL, 0}};
+  // clang-format on
+
+  int opt;
+  while ((opt = getopt_long(argc, argv, "hvscgtmpC", long_options, NULL)) >= 0) {
+    switch (opt) {
+      case 'h':
+        oobj.help = true;
+        break;
+      case 'v':
+        oobj.version = true;
+        break;
+      case 's':
+        oobj.summary = true;
+        break;
+      case 'a':
+        oobj.all = true;
+        break;
+      case 'c':
+        oobj.cpu = true;
+        break;
+      case 'g':
+        oobj.gpu = true;
+        break;
+      case 't':
+        oobj.thermal = true;
+        break;
+      case 'm':
+        oobj.memory = true;
+        break;
+      case 'p':
+        oobj.power = true;
+        break;
+      case 'C':
+        enable_color = true;
+        break;
+      default:
+        return -1;
+    }
+  }
+
+  if (optind < argc) {
+    std::cerr << progname << ": too many arguments" << std::endl;
+  }
+
+  // print help and exit
+  if (oobj.help) {
+    print_help_exit();
+  }
+
+  // print version and exit
+  if (oobj.version) {
+    print_version_exit();
+  }
+
   jetson_info_t result;
 
-  result.thermal = get_thermal_zones();
-  result.cpu = get_cpus();
-  result.gpu = get_gpu();
-  result.memory = get_memory();
+  if ((oobj.gpu || oobj.cpu || oobj.thermal || oobj.memory || oobj.power) == false) {
+    oobj.all = true;
+  }
 
-  pretty_print(result);
+  if (oobj.cpu || oobj.gpu || oobj.memory || oobj.power || oobj.all) {
+    if (!is_sudo_or_root()) {
+      std::cerr << progname << ": this operation requires root privileges." << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if (oobj.all || oobj.thermal) {
+    result.thermal = get_thermal_zones();
+    pretty_print(result.thermal, oobj.summary);
+  }
+
+  if (oobj.all || oobj.cpu) {
+    result.cpu = get_cpus();
+    pretty_print(result.cpu, oobj.summary);
+  }
+
+  if (oobj.all || oobj.gpu) {
+    result.gpu = get_gpu();
+    pretty_print(result.gpu, oobj.summary);
+  }
+
+  if (oobj.all || oobj.memory) {
+    result.memory = get_memory();
+    pretty_print(result.memory, oobj.summary);
+  }
+
+  if (oobj.all || oobj.power) {
+    result.power = get_power();
+    pretty_print(result.power, oobj.summary);
+  }
 
   return 0;
 }

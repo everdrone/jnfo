@@ -35,4 +35,6 @@ unsigned parse_size(string str) {
         break;
     }
   }
+
+  return 0;
 }
