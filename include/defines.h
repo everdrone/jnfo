@@ -40,6 +40,9 @@
 // memory
 #define IRAM_SIZE_PATH TEST_PATH "/sys/kernel/debug/nvmap/iram/size"
 
+// filesystem
+#define MTAB_PATH TEST_PATH "/etc/mtab"
+
 // power
 #define POWER_INPUT_NAME_GLOB \
   TEST_PATH "/sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/rail_name_[0-9]"

@@ -1,3 +1,9 @@
+jnfo (1.0.1-1) unstable; urgency=medium
+
+  * Add filesystem statistics
+
+ -- Giorgio Tropiano <giorgiotropiano@gmail.com>  Sun, 13 Jun 2021 13:25:54 +0200
+
 jnfo (1.0.0-1) unstable; urgency=medium
 
   * Initial release

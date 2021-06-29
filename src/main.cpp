@@ -6,6 +6,7 @@
 #include "config.h"
 #include "cpu.h"
 #include "defines.h"
+#include "filesystem.h"
 #include "formatter.h"
 #include "gpu.h"
 #include "mem.h"
@@ -43,6 +44,7 @@ typedef struct {
   power_t power;
 
   memory_t memory;
+  vector<fs_t> filesystem;
 
   // TODO: ape_t ape
   // TODO: vic_t vic
@@ -60,6 +62,7 @@ typedef struct options_struct {
   bool gpu = false;
   bool thermal = false;
   bool memory = false;
+  bool storage = false;
   bool power = false;
 } options_t;
 
@@ -79,6 +82,7 @@ void print_help_exit() {
     "    -g --gpu          Show GPU information and clients\n"
     "    -t --thermal      Show thermal sensors\n"
     "    -m --memory       Show RAM, swap and NVMap\n"
+    "    -f --storage      Show filesystems\n"
     "    -p --power        Show power and current information\n"
     "    -C --color        Enable colored output\n",
     progname);
@@ -104,13 +108,14 @@ int main(int argc, char* argv[]) {
     {"gpu",             no_argument,        NULL, 'g'},
     {"thermal",         no_argument,        NULL, 't'},
     {"memory",          no_argument,        NULL, 'm'},
+    {"storage",         no_argument,        NULL, 'f'},
     {"power",           no_argument,        NULL, 'p'},
     {"color",           no_argument,        NULL, 'C'},
     {NULL,              0,                  NULL, 0}};
   // clang-format on
 
   int opt;
-  while ((opt = getopt_long(argc, argv, "hvscgtmpC", long_options, NULL)) >= 0) {
+  while ((opt = getopt_long(argc, argv, "hvscgtmfpC", long_options, NULL)) >= 0) {
     switch (opt) {
       case 'h':
         oobj.help = true;
@@ -135,6 +140,9 @@ int main(int argc, char* argv[]) {
         break;
       case 'm':
         oobj.memory = true;
+        break;
+      case 'f':
+        oobj.storage = true;
         break;
       case 'p':
         oobj.power = true;
@@ -163,7 +171,8 @@ int main(int argc, char* argv[]) {
 
   jetson_info_t result;
 
-  if ((oobj.gpu || oobj.cpu || oobj.thermal || oobj.memory || oobj.power) == false) {
+  if ((oobj.gpu || oobj.cpu || oobj.thermal || oobj.memory || oobj.storage || oobj.power) ==
+      false) {
     oobj.all = true;
   }
 
@@ -192,6 +201,11 @@ int main(int argc, char* argv[]) {
   if (oobj.all || oobj.memory) {
     result.memory = get_memory();
     pretty_print(result.memory, oobj.summary);
+  }
+
+  if (oobj.all || oobj.storage) {
+    result.filesystem = get_filesystem();
+    pretty_print(result.filesystem, oobj.summary);
   }
 
   if (oobj.all || oobj.power) {

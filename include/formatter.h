@@ -41,8 +41,7 @@ fmt_measure_t format_frequency(unsigned hertz, int decimals) {
   return out;
 }
 
-fmt_measure_t format_storage(unsigned bytes, int decimals,
-                             bool use_iec = false) {
+fmt_measure_t format_storage(unsigned long bytes, int decimals, bool use_iec = false) {
   fmt_measure_t out;
   char buffer[16];
   float result = float(bytes);
@@ -74,7 +73,7 @@ fmt_measure_t format_storage(unsigned bytes, int decimals,
     out.unit = "kB";
   } else {
     // return bytes
-    sprintf(buffer, "%d", bytes);
+    sprintf(buffer, "%lu", bytes);
     out.value = buffer;
     out.unit = "B";
     return out;
@@ -90,7 +89,11 @@ string format_percent(float x, float y, int decimals) {
   string out;
   char buffer[16];
 
-  sprintf(buffer, "%.*f%%", decimals, x / y * 100.0);
+  if (y == 0) {
+    sprintf(buffer, "0%%");
+  } else {
+    sprintf(buffer, "%.*f%%", decimals, x / y * 100.0);
+  }
 
   out = buffer;
   return out;

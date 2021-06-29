@@ -110,6 +110,7 @@ vector<cpu_t> get_cpus() {
 
 void pretty_print(vector<cpu_t> info, bool summary = false) {
   fmt_measure_t fmt;
+
   unsigned avg_cur_freq = 0;
   unsigned avg_max_freq = 0;
 

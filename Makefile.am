@@ -11,6 +11,7 @@ EXTRA_DIST = readme.md license
 jnfo_SOURCES = \
     include/cpu.h \
     include/defines.h \
+    include/filesystem.h \
     include/formatter.h \
     include/gpu.h \
     include/mem.h \

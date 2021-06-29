@@ -50,6 +50,9 @@ Memory:
   RAM:   33%
   Swap:  0%
   NVMap: 0%
+Filesystem:
+  Capacity: 125.72 GB
+  Used:     11%
 Power:
   Total: 2078 mW
 ```
@@ -170,6 +173,37 @@ Memory:
     Free:   258.05 kB
     Used:   0 B
     Usage:  0%
+Filesystem:
+  - Name:      /dev/mmcblk0p1
+    Path:      /
+    Capacity:  125.72 GB
+    Free:      112.47 GB
+    Available: 107.20 GB
+    Used:      11%
+  - Name:      proc
+    Path:      /proc
+    Capacity:  0 B
+    Free:      0 B
+    Available: 0 B
+    Used:      0%
+  - Name:      sysfs
+    Path:      /sys
+    Capacity:  0 B
+    Free:      0 B
+    Available: 0 B
+    Used:      0%
+  - Name:      none
+    Path:      /dev
+    Capacity:  1.83 GB
+    Free:      1.83 GB
+    Available: 1.83 GB
+    Used:      0%
+  - Name:      tmpfs
+    Path:      /run
+    Capacity:  2.08 GB
+    Free:      2.06 GB
+    Available: 2.06 GB
+    Used:      1%
 Power:
   - Name:                   POM_5V_IN
     Critical Current Limit: 32760 mA
