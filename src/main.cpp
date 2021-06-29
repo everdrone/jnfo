@@ -9,6 +9,7 @@
 #include "filesystem.h"
 #include "formatter.h"
 #include "gpu.h"
+#include "inet.h"
 #include "mem.h"
 #include "parse_size.h"
 #include "power.h"
@@ -45,6 +46,7 @@ typedef struct {
 
   memory_t memory;
   vector<fs_t> filesystem;
+  network_t network;
 
   // TODO: ape_t ape
   // TODO: vic_t vic
@@ -63,6 +65,7 @@ typedef struct options_struct {
   bool thermal = false;
   bool memory = false;
   bool storage = false;
+  bool network = false;
   bool power = false;
 } options_t;
 
@@ -83,6 +86,7 @@ void print_help_exit() {
     "    -t --thermal      Show thermal sensors\n"
     "    -m --memory       Show RAM, swap and NVMap\n"
     "    -f --storage      Show filesystems\n"
+    "    -n --network      Show network interfaces\n"
     "    -p --power        Show power and current information\n"
     "    -C --color        Enable colored output\n",
     progname);
@@ -109,13 +113,14 @@ int main(int argc, char* argv[]) {
     {"thermal",         no_argument,        NULL, 't'},
     {"memory",          no_argument,        NULL, 'm'},
     {"storage",         no_argument,        NULL, 'f'},
+    {"network",         no_argument,        NULL, 'n'},
     {"power",           no_argument,        NULL, 'p'},
     {"color",           no_argument,        NULL, 'C'},
     {NULL,              0,                  NULL, 0}};
   // clang-format on
 
   int opt;
-  while ((opt = getopt_long(argc, argv, "hvscgtmfpC", long_options, NULL)) >= 0) {
+  while ((opt = getopt_long(argc, argv, "hvscgtmfnpC", long_options, NULL)) >= 0) {
     switch (opt) {
       case 'h':
         oobj.help = true;
@@ -144,6 +149,9 @@ int main(int argc, char* argv[]) {
       case 'f':
         oobj.storage = true;
         break;
+      case 'n':
+        oobj.network = true;
+        break;
       case 'p':
         oobj.power = true;
         break;
@@ -171,8 +179,8 @@ int main(int argc, char* argv[]) {
 
   jetson_info_t result;
 
-  if ((oobj.gpu || oobj.cpu || oobj.thermal || oobj.memory || oobj.storage || oobj.power) ==
-      false) {
+  if ((oobj.gpu || oobj.cpu || oobj.thermal || oobj.memory || oobj.storage || oobj.network ||
+       oobj.power) == false) {
     oobj.all = true;
   }
 
@@ -206,6 +214,11 @@ int main(int argc, char* argv[]) {
   if (oobj.all || oobj.storage) {
     result.filesystem = get_filesystem();
     pretty_print(result.filesystem, oobj.summary);
+  }
+
+  if (oobj.all || oobj.network) {
+    result.network = get_network();
+    pretty_print(result.network, oobj.summary);
   }
 
   if (oobj.all || oobj.power) {

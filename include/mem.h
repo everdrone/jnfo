@@ -27,8 +27,7 @@ memory_t get_memory() {
   // read /proc/meminfo line by line
   vector<string> meminfo = read_lines(MEMINFO);
 
-  result.nvmap.total =
-      std::strtoul(read_file(IRAM_SIZE_PATH).c_str(), NULL, 16);
+  result.nvmap.total = std::strtoul(read_file(IRAM_SIZE_PATH).c_str(), NULL, 16);
 
   for (const auto& line : meminfo) {
     size_t cut_index = 0;
@@ -86,17 +85,20 @@ void pretty_print(memory_t info, bool summary = false) {
   pretty("Memory", "", 0);
 
   if (summary) {
-    pretty("RAM",
-           format_percent(info.ram.total - info.ram.free, info.ram.total, 0)
-               .c_str(),
-           1, PERCENT, 2);
-    pretty("Swap",
-           format_percent(info.swap.total - info.swap.free, info.swap.total, 0)
-               .c_str(),
-           1, PERCENT, 1);
-    pretty("NVMap",
-           format_percent(info.nvmap.cached, info.nvmap.total, 0).c_str(), 1,
+    pretty("RAM", "", 1);
+    fmt = format_storage(info.ram.total, 2);
+    pretty("Total", fmt.value.c_str(), 2, NUMBER, 0, fmt.unit.c_str());
+    pretty("Usage", format_percent(info.ram.total - info.ram.free, info.ram.total, 0).c_str(), 2,
            PERCENT, 0);
+    pretty("Swap", "", 1);
+    fmt = format_storage(info.swap.total, 2);
+    pretty("Total", fmt.value.c_str(), 2, NUMBER, 0, fmt.unit.c_str());
+    pretty("Usage", format_percent(info.swap.total - info.swap.free, info.swap.total, 0).c_str(), 2,
+           PERCENT, 0);
+    pretty("NVMap", "", 1);
+    fmt = format_storage(info.nvmap.total, 2);
+    pretty("Total", fmt.value.c_str(), 2, NUMBER, 0, fmt.unit.c_str());
+    pretty("Usage", format_percent(info.nvmap.cached, info.nvmap.total, 0).c_str(), 2, PERCENT, 0);
   } else {
     pretty("RAM", "", 1);
 
@@ -108,10 +110,8 @@ void pretty_print(memory_t info, bool summary = false) {
 
     fmt = format_storage(info.ram.cached, 2);
     pretty("Cached", fmt.value.c_str(), 2, NUMBER, 0, fmt.unit.c_str());
-    pretty("Usage",
-           format_percent(info.ram.total - info.ram.free, info.ram.total, 0)
-               .c_str(),
-           2, PERCENT, 1);
+    pretty("Usage", format_percent(info.ram.total - info.ram.free, info.ram.total, 0).c_str(), 2,
+           PERCENT, 1);
     pretty("Swap", "", 1);
 
     fmt = format_storage(info.swap.total, 2);
@@ -122,10 +122,8 @@ void pretty_print(memory_t info, bool summary = false) {
 
     fmt = format_storage(info.swap.cached, 2);
     pretty("Cached", fmt.value.c_str(), 2, NUMBER, 0, fmt.unit.c_str());
-    pretty("Usage",
-           format_percent(info.swap.total - info.swap.free, info.swap.total, 0)
-               .c_str(),
-           2, PERCENT, 1);
+    pretty("Usage", format_percent(info.swap.total - info.swap.free, info.swap.total, 0).c_str(), 2,
+           PERCENT, 1);
     pretty("NVMap", "", 1);
 
     fmt = format_storage(info.nvmap.total, 2);
@@ -136,8 +134,6 @@ void pretty_print(memory_t info, bool summary = false) {
 
     fmt = format_storage(info.nvmap.cached, 2);
     pretty("Used", fmt.value.c_str(), 2, NUMBER, 2, fmt.unit.c_str());
-    pretty("Usage",
-           format_percent(info.nvmap.cached, info.nvmap.total, 0).c_str(), 2,
-           PERCENT, 1);
+    pretty("Usage", format_percent(info.nvmap.cached, info.nvmap.total, 0).c_str(), 2, PERCENT, 1);
   }
 }

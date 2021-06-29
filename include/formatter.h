@@ -41,7 +41,8 @@ fmt_measure_t format_frequency(unsigned hertz, int decimals) {
   return out;
 }
 
-fmt_measure_t format_storage(unsigned long bytes, int decimals, bool use_iec = false) {
+fmt_measure_t format_digital(unsigned long bytes, int decimals, string suffix = "",
+                             bool use_iec = false) {
   fmt_measure_t out;
   char buffer[16];
   float result = float(bytes);
@@ -49,33 +50,33 @@ fmt_measure_t format_storage(unsigned long bytes, int decimals, bool use_iec = f
   if (use_iec && bytes / 1099511627776 >= 1) {
     // TiB
     result /= 1099511627776;  // 1024**4
-    out.unit = "TiB";
+    out.unit = "TiB" + suffix;
   } else if (bytes * 1e-12 >= 1) {
     result *= 1e-12;
-    out.unit = "TB";
+    out.unit = "TB" + suffix;
   } else if (use_iec && bytes / 1073741824 >= 1) {
     result /= 1073741824;  // 1024**3
-    out.unit = "GiB";
+    out.unit = "GiB" + suffix;
   } else if (bytes * 1e-9 >= 1) {
     result *= 1e-9;
-    out.unit = "GB";
+    out.unit = "GB" + suffix;
   } else if (use_iec && bytes / 1048576 >= 1) {
     result /= 1048576;  // 1024**2
-    out.unit = "MiB";
+    out.unit = "MiB" + suffix;
   } else if (bytes * 1e-6 >= 1) {
     result *= 1e-6;
-    out.unit = "MB";
+    out.unit = "MB" + suffix;
   } else if (use_iec && bytes / 1024 >= 1) {
     result /= 1024;
-    out.unit = "KiB";
+    out.unit = "KiB" + suffix;
   } else if (bytes * 1e-3 >= 1) {
     result *= 1e-3;
-    out.unit = "kB";
+    out.unit = "kB" + suffix;
   } else {
     // return bytes
     sprintf(buffer, "%lu", bytes);
     out.value = buffer;
-    out.unit = "B";
+    out.unit = "B" + suffix;
     return out;
   }
 
@@ -83,6 +84,14 @@ fmt_measure_t format_storage(unsigned long bytes, int decimals, bool use_iec = f
   out.value = buffer;
 
   return out;
+}
+
+fmt_measure_t format_storage(unsigned long bytes, int decimals, bool use_iec = false) {
+  return format_digital(bytes, decimals, "", use_iec);
+}
+
+fmt_measure_t format_speed(unsigned long bytes, int decimals, bool use_iec = false) {
+  return format_digital(bytes, decimals, "/s", use_iec);
 }
 
 string format_percent(float x, float y, int decimals) {

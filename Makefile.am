@@ -14,6 +14,7 @@ jnfo_SOURCES = \
     include/filesystem.h \
     include/formatter.h \
     include/gpu.h \
+    include/inet.h \
     include/mem.h \
     include/parse_size.h \
     include/power.h \

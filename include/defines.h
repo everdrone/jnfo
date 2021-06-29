@@ -43,10 +43,13 @@
 // filesystem
 #define MTAB_PATH TEST_PATH "/etc/mtab"
 
+// interfaces
+#define INET_GLOB TEST_PATH "/sys/class/net/*"
+
 // power
 #define POWER_INPUT_NAME_GLOB \
   TEST_PATH "/sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/rail_name_[0-9]"
 #define POWER_INPUT_PATH TEST_PATH "/sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0"
 
-static char* progname = "jnfo";
+static const char* progname = "jnfo";
 static bool enable_color = false;
