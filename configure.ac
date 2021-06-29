@@ -1,4 +1,4 @@
-AC_INIT([jnfo], [1.1], [])
+AC_INIT([jnfo], [1.1.3], [])
 AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
 
 AX_CXX_COMPILE_STDCXX_17
