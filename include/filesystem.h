@@ -14,6 +14,7 @@ typedef struct {
   unsigned long available;
   unsigned long used;
   unsigned long nonroot_total;
+  unsigned long long inodes;
 } fs_t;
 
 vector<fs_t> get_filesystem() {
@@ -67,6 +68,8 @@ vector<fs_t> get_filesystem() {
           filesystem.used = filesystem.capacity - filesystem.free;
           filesystem.nonroot_total = filesystem.used + filesystem.available;
 
+          filesystem.inodes = vfs.f_files;
+
           result.push_back(filesystem);
         }
 
@@ -111,6 +114,8 @@ void pretty_print(vector<fs_t> info, bool summary = false) {
 
       fmt = format_storage(fs.available, 2);
       pretty("Available", fmt.value.c_str(), 2, NUMBER, 0, fmt.unit.c_str());
+
+      pretty("Inodes", std::to_string(fs.inodes).c_str(), 2, NUMBER, 3);
 
       pretty("Used", format_percent(fs.used, fs.nonroot_total, 0).c_str(), 2, PERCENT, 5);
     }

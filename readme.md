@@ -24,7 +24,6 @@ sudo make install
 jnfo [options]
     -h --help         Show this help
     -v --version      Show the program version
-    -s --summary      Less verbose
     -c --cpu          Show CPU and cores information
     -g --gpu          Show GPU information and clients
     -t --thermal      Show thermal sensors
@@ -33,12 +32,13 @@ jnfo [options]
     -n --network      Show network interfaces
     -p --power        Show power and current information
     -C --color        Enable colored output
+    -V --verbose      Enable verbose output
 ```
 
 ## Sample Output
 
 ```yml
-# sudo jnfo -s
+# sudo jnfo
 Thermal:
   Average: 32.8 C
   Max:     37.0 C
@@ -69,7 +69,7 @@ Power:
 ```
 
 ```yml
-# sudo jnfo
+# sudo jnfo --verbose
 Thermal:
   Average: 33.2 C
   Max:     37.5 C

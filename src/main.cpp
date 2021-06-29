@@ -58,7 +58,7 @@ typedef struct {
 typedef struct options_struct {
   bool help = false;
   bool version = false;
-  bool summary = false;
+  bool summary = true;
   bool all = false;
   bool cpu = false;
   bool gpu = false;
@@ -80,7 +80,6 @@ void print_help_exit() {
     "%s [options]\n"
     "    -h --help         Show this help\n"
     "    -v --version      Show the program version\n"
-    "    -s --summary      Less verbose\n"
     "    -c --cpu          Show CPU and cores information\n"
     "    -g --gpu          Show GPU information and clients\n"
     "    -t --thermal      Show thermal sensors\n"
@@ -88,7 +87,8 @@ void print_help_exit() {
     "    -f --storage      Show filesystems\n"
     "    -n --network      Show network interfaces\n"
     "    -p --power        Show power and current information\n"
-    "    -C --color        Enable colored output\n",
+    "    -C --color        Enable colored output\n"
+    "    -V --verbose      Enable verbose output\n",
     progname);
   // clang-format on
   exit(EXIT_SUCCESS);
@@ -107,7 +107,6 @@ int main(int argc, char* argv[]) {
   static const struct option long_options[] = {
     {"help",            no_argument,        NULL, 'h'},
     {"version",         no_argument,        NULL, 'v'},
-    {"summary",         no_argument,        NULL, 's'},
     {"cpu",             no_argument,        NULL, 'c'},
     {"gpu",             no_argument,        NULL, 'g'},
     {"thermal",         no_argument,        NULL, 't'},
@@ -116,20 +115,18 @@ int main(int argc, char* argv[]) {
     {"network",         no_argument,        NULL, 'n'},
     {"power",           no_argument,        NULL, 'p'},
     {"color",           no_argument,        NULL, 'C'},
+    {"verbose",         no_argument,        NULL, 'V'},
     {NULL,              0,                  NULL, 0}};
   // clang-format on
 
   int opt;
-  while ((opt = getopt_long(argc, argv, "hvscgtmfnpC", long_options, NULL)) >= 0) {
+  while ((opt = getopt_long(argc, argv, "hvcgtmfnpCV", long_options, NULL)) >= 0) {
     switch (opt) {
       case 'h':
         oobj.help = true;
         break;
       case 'v':
         oobj.version = true;
-        break;
-      case 's':
-        oobj.summary = true;
         break;
       case 'a':
         oobj.all = true;
@@ -157,6 +154,9 @@ int main(int argc, char* argv[]) {
         break;
       case 'C':
         enable_color = true;
+        break;
+      case 'V':
+        oobj.summary = false;
         break;
       default:
         return -1;

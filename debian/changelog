@@ -1,3 +1,9 @@
+jnfo (1.1-2) unstable; urgency=low
+
+  * Add inode count to filesystem tab
+
+ -- Giorgio Tropiano <giorgiotropiano@gmail.com>  Tue, 29 Jun 2021 13:51:00 +0200
+
 jnfo (1.1-1) unstable; urgency=low
 
   * Add network interfaces
