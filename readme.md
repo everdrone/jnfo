@@ -29,6 +29,8 @@ jnfo [options]
     -g --gpu          Show GPU information and clients
     -t --thermal      Show thermal sensors
     -m --memory       Show RAM, swap and NVMap
+    -f --storage      Show filesystems
+    -n --network      Show network interfaces
     -p --power        Show power and current information
     -C --color        Enable colored output
 ```
