@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+      - name: get version
+        id: get_version
+        uses: battila7/get-version-action@v2
+      - name: get changes
+        run: |
+          dpkg-parsechangelog --show-field Changes | sed -e '1,3d' | cut -c 3- | sed '1s;^;## Changes:\n\n;' > release_body.md
+          cat release_body.md
       - uses: uraimo/run-on-arch-action@v2.0.5
         name: build aarch64
         id: runcmd
@@ -29,13 +36,13 @@ jobs:
             ./autogen.sh
             ./configure
             make deb
-            cp jnfo_*.deb /artifacts
+            cp *.deb /artifacts
       - name: deb file path
-        run: echo "::set-output name=file_path::$(readlink -f ${PWD}/artifacts/jnfo_*.deb)"
+        run: echo "::set-output name=file_path::$(readlink -f ${PWD}/artifacts/jnfo_${{ steps.get_version.outputs.version-without-v }}_arm64.deb)"
         shell: bash
         id: deb_file_path
       - name: deb file name
-        run: echo "::set-output name=file_name::$(basename ${PWD}/artifacts/jnfo_*.deb)"
+        run: echo "::set-output name=file_name::$(basename ${PWD}/artifacts/jnfo_${{ steps.get_version.outputs.version-without-v }}_arm64.deb)"
         shell: bash
         id: deb_file_name
       - name: Create Release
@@ -46,6 +53,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
+          body_path: release_body.md
           draft: false
           prerelease: false
       - name: Upload Release Asset
